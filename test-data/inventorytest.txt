@@ -1,0 +1,8 @@
+Johnnie Walker,Black Label,blended scotch
+Jose Cuervo,Silver,tequila
+Jose Cuervo,Silver,100 ml
+
+#comment
+Johnnie Walker,Black Label,100 ml
+Johnnie Walker,Black Label,100 ml
+Johnnie Walker,Black Label,100 ml

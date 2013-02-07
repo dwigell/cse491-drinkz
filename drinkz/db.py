@@ -50,10 +50,21 @@ def get_liquor_amount(mfg, liquor):
     for (m, l, amount) in _inventory_db:
         if mfg == m and liquor == l:
             amounts.append(amount)
+            
+    total_ml = 0.0    
+    
+    for item in amounts:
+        item_amount = item.split()
+        if item_amount[1]=="oz":
+            total_ml += float(item_amount[0]) * 29.5735
+        else:
+            total_ml += float(item_amount[0])
+    
+	total = repr(total_ml) + ' ml'    
 
-    return amounts[0]
+    return total 
 
-def get_liquor_inventory():
+def get_liquor_inventory(): 
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
     for (m, l, _) in _inventory_db:
         yield m, l
