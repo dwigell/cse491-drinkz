@@ -47,6 +47,7 @@ def test_get_liquor_amount_1():
 
     db.add_bottle_type('Johnnie Walker', 'Black Label', 'blended scotch')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
+    
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
     assert amount == '1000.0 ml', amount
 

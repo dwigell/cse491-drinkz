@@ -34,8 +34,27 @@ def add_to_inventory(mfg, liquor, amount):
         err = "Missing liquor: manufacturer '%s', name '%s'" % (mfg, liquor)
         raise LiquorMissing(err)
 
-    # just add it to the inventory database as a tuple, for now.
-    _inventory_db[(mfg, liquor)] =  amount
+    # SINCE INVENTORY IS A DICT, CHECK INVENTORY FOR LIQUOR
+    # AND ADD INVENTORY AMOUNT WITH NEW AMOUNT  
+
+    if check_inventory(mfg, liquor):
+	item = amount.split()
+	if item[1]=="oz":
+	    new_amount = convert_oz(amount)#FLOAT AMOUNT
+            old_amount = (get_liquor_amount(mfg, liquor)).split()
+       	    old_amount_float = old_amount[0]#FLOAT OLD AMOUNT
+            new_total = float(old_amount_float) + float(new_amount)
+	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
+
+	if item[1]=="ml":
+	    new_amount = item[0]
+	    old_amount = (get_liquor_amount(mfg, liquor)).split()
+            old_amount_float = old_amount[0]
+	    new_total = float(old_amount_float) + float(new_amount)
+	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'	
+    else:    
+    # ADD/UPDATE INVENTORY ITEM
+        _inventory_db[(mfg, liquor)] =  amount
 
 def check_inventory(mfg, liquor):
     for key in _inventory_db:
@@ -68,3 +87,11 @@ def get_liquor_inventory():
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
     for key in _inventory_db:
         yield key[0], key[1]
+
+def convert_oz(amount):
+    total = 0.0
+
+    item = amount.split()
+    if item[1]=="oz":
+	total += float(item[0]) * 29.5735
+    return total        

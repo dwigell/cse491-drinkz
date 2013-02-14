@@ -7,8 +7,9 @@ drinkz.db.add_bottle_type('Bacardi', 'Limon', 'flavored vodka')
 
 drinkz.db.add_to_inventory('Johnnie Walker', 'Black Label', '70 oz')
 drinkz.db.add_to_inventory('Bacardi', 'Limon', '1000 ml')
-
-
+#TRY TO ADD ANOTHER BACARDI LIMON AND ANOTHER BLACK LABEL
+drinkz.db.add_to_inventory('Bacardi', 'Limon', '70 oz')
+drinkz.db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
 for mfg, liquor in drinkz.db.get_liquor_inventory():
     #print mfg + "		" + liquor + "		" + drinkz.db.get_liquor_amount(mfg,liquor)
     print '%-5s | %5s | %10s' % (mfg, liquor, drinkz.db.get_liquor_amount(mfg,liquor))
