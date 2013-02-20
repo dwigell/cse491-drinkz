@@ -118,7 +118,7 @@ def convert_ml(amount):
     return total
 
 def add_recipe(r):
-    print _recipe_db, "===========recipe_db"
+    
     if r.name not in _recipe_db:
         _recipe_db[r.name]=r
     else:
