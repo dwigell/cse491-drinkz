@@ -31,8 +31,8 @@ def load_bottle_types(fp):
             for (mfg, name, typ) in new_reader:
     	    	amt = typ.split()
     	    	#if amt[1] == 'ml' or amt[1] == 'oz':
-    	    	if typ.endswith('ml') or typ.endswith('oz'):
-    	    	    continue
+    	    	#if typ.endswith('ml') or typ.endswith('oz'):
+    	    	    #continue
        	        n += 1
                 db.add_bottle_type(mfg, name, typ)
 	    new_reader.next()
@@ -62,10 +62,10 @@ def load_inventory(fp):
     while(1):
         try:
     	    for (mfg, name, amount) in new_reader:
-    	    	amt = amount.split()
-    	    	if amount.endswith('ml') or amount.endswith('oz'):
-                    n += 1
-                    db.add_to_inventory(mfg, name, amount)
+    	    	#amt = amount.split()
+    	    	#if amount.endswith('ml') or amount.endswith('oz'):
+                n += 1
+                db.add_to_inventory(mfg, name, amount)
     	    new_reader.next()
     	except StopIteration:
     	    break

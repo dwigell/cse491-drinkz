@@ -6,15 +6,20 @@ Database functionality for drinkz information.
 _bottle_types_db = set(tuple())
 _inventory_db = {}
 
+_recipe_db = {}
+
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
-    global _bottle_types_db, _inventory_db
+    global _bottle_types_db, _inventory_db, _recipe_db
     _bottle_types_db = set(tuple())
     _inventory_db = {}
+    _recipe_db = {}
 
 # exceptions in Python inherit from Exception and generally don't need to
 # override any methods.
 class LiquorMissing(Exception):
+    pass
+class DuplicateRecipeName(Exception):
     pass
 
 def add_bottle_type(mfg, liquor, typ):
@@ -40,18 +45,28 @@ def add_to_inventory(mfg, liquor, amount):
     if check_inventory(mfg, liquor):
 	item = amount.split()
 	if item[1]=="oz":
-	    new_amount = convert_oz(amount)#FLOAT AMOUNT
-            old_amount = (get_liquor_amount(mfg, liquor)).split()
-       	    old_amount_float = old_amount[0]#FLOAT OLD AMOUNT
-            new_total = float(old_amount_float) + float(new_amount)
+	    new_amount = convert_ml(amount)#FLOAT AMOUNT
+	    old_amount = get_liquor_amount(mfg, liquor)
+	    new_total = float(old_amount) + float(new_amount)
 	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
 
 	if item[1]=="ml":
 	    new_amount = item[0]
-	    old_amount = (get_liquor_amount(mfg, liquor)).split()
-            old_amount_float = old_amount[0]
-	    new_total = float(old_amount_float) + float(new_amount)
-	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'	
+	    old_amount = get_liquor_amount(mfg, liquor)
+	    new_total = float(old_amount) + float(new_amount)
+	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
+
+	if item[1]=="gallon" or item[1]=="gallons":
+	    new_amount = convert_ml(amount)
+	    old_amount = get_liquor_amount(mfg, liquor)
+	    new_total = float(old_amount) + float(new_amount)
+	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
+
+        if item[1]=="liter" or item[1]=="liters":
+            new_amount = convert_ml(amount)
+            old_amount = get_liquor_amount(mfg, liquor)
+            new_total = float(old_amount) + float(new_amount)
+            _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
     else:    
     # ADD/UPDATE INVENTORY ITEM
         _inventory_db[(mfg, liquor)] =  amount
@@ -76,22 +91,44 @@ def get_liquor_amount(mfg, liquor):
         item_amount = item.split()
         if item_amount[1]=="oz":
             total_ml += float(item_amount[0]) * 29.5735
+	elif item_amount[1]=="gallon" or item_amount[1]=="gallons":
+	    total_ml += float(item_amount[0]) * 3785.41
+        elif item_amount[1]=="liter" or item_amount[1]=="liters":
+            total_ml += float(item_amount[0]) * 1000
         else:
-            total_ml += float(item_amount[0])
-    
-	total = repr(total_ml) + ' ml'    
+            total_ml += float(item_amount[0])    
 
-    return total 
+    return total_ml 
 
 def get_liquor_inventory(): 
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
     for key in _inventory_db:
         yield key[0], key[1]
 
-def convert_oz(amount):
+def convert_ml(amount):
     total = 0.0
 
     item = amount.split()
     if item[1]=="oz":
 	total += float(item[0]) * 29.5735
-    return total        
+    if item[1]=="gallon" or item[1]=="gallons":
+        total += float(item[0]) * 3785.41
+    if item[1]=="liter" or item[1]=="liters":
+        total += float(item[0]) * 1000
+    return total
+
+def add_recipe(r):
+    print _recipe_db, "===========recipe_db"
+    if r.name not in _recipe_db:
+        _recipe_db[r.name]=r
+    else:
+        raise DuplicateRecipeName()
+    
+def get_recipe(name):
+    if name not in _recipe_db:
+	return None
+    return _recipe_db[name]
+
+def get_all_recipes():
+    
+    return _recipe_db.values()        
