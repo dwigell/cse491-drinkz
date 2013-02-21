@@ -54,14 +54,19 @@ fp.close()
 
 fp = open('html/recipes.html', 'w')
 
-print >>fp, "<b>Recipes</b><p>Recipe, Do We Have All the Ingredients?</p><ul>"
+print >>fp, "<b>Recipes</b><p>Recipe, Ingredients List, Do We Have All the Ingredients?</p><ul>"
+ 
 
 for key in drinkz.db._recipe_db:
+    iList=[]
+    for item in drinkz.db._recipe_db.values():
+        for i in item.ingredients:
+            iList.append(i)
     if len(drinkz.db._recipe_db[key].need_ingredients()) > 0:
         answer = "No"
     else:
         answer = "Yes"
-    print >>fp, "<p></p><li> %s,<b> %s</b>" % (key, answer)
+    print >>fp, "<p></p><li> %s, %s,<b> %s</b>" % (key, iList, answer)
 
 print >>fp, "</ul>"
 
