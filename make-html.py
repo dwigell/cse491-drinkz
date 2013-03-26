@@ -57,11 +57,17 @@ fp = open('html/recipes.html', 'w')
 print >>fp, "<b>Recipes</b><p>Recipe, Do We Have All the Ingredients?</p><ul>"
 
 for key in drinkz.db._recipe_db:
+
+    a = drinkz.db._recipe_db[key].ingredients[0][0]
+    print a
+    b = drinkz.db._recipe_db[key].ingredients[0][1] 
+    
     if len(drinkz.db._recipe_db[key].need_ingredients()) > 0:
         answer = "No"
+        print >>fp, """<p></p><li> %s, %s, %s, <b> %s</b><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_-xqzPnoj6Fv6aT7JeoZl7B_QsnwcfrdhuhyeZIS5SW0RutbRAg" alt="sad" width="50" height="50">""" % (key, a, b, answer)
     else:
         answer = "Yes"
-    print >>fp, "<p></p><li> %s,<b> %s</b>" % (key, answer)
+        print >>fp, """<p></p><li> %s, %s, %s, <b> %s</b><img src="happyforeveralone.jpeg" alt="happy" width="50" height="50">""" % (key, a, b, answer)
 
 print >>fp, "</ul>"
 
