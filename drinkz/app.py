@@ -3,7 +3,37 @@ from wsgiref.simple_server import make_server
 import urlparse
 import simplejson
 
-import db, recipes
+import db, recipes, convert
+
+#=========================
+
+#db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
+#db.add_to_inventory('Johnnie Walker', 'black label', '500 ml')
+
+#db.add_bottle_type('Uncle Herman\'s', 'moonshine', 'blended scotch')
+#db.add_to_inventory('Uncle Herman\'s', 'moonshine', '5 liter')
+        
+#db.add_bottle_type('Gray Goose', 'vodka', 'unflavored vodka')
+#db.add_to_inventory('Gray Goose', 'vodka', '1 liter')
+
+#db.add_bottle_type('Rossi', 'extra dry vermouth', 'vermouth')
+#db.add_to_inventory('Rossi', 'extra dry vermouth', '24 oz')
+
+#r = recipes.Recipe('scotch on the rocks', [('blended scotch', '4 oz')])
+#db.add_recipe(r)
+
+#r2 = recipes.Recipe('vomit inducing martini', [('orange juice', '6 oz'), ('vermouth', '1.5 oz')])
+#db.add_recipe(r2)
+
+#r3 = recipes.Recipe('whiskey bath', [('blended scotch', '6 liter')])
+#db.add_recipe(r3)
+
+#==================================
+
+
+
+
+
 
 dispatch = {
     '/' : 'index',
@@ -14,7 +44,9 @@ dispatch = {
     '/recv' : 'recv',
     '/rpc'  : 'dispatch_rpc',
 
-    '/recipes' : 'recipes'
+    '/recipes' : 'recipes',
+    '/inventory' : 'inventory',
+    '/liquorTypes' : 'liquorTypes'
 }
 
 html_headers = [('Content-type', 'text/html')]
@@ -45,14 +77,16 @@ class SimpleApp(object):
 <a href='somethingelse'>something else</a>, or
 <a href='form'>a form...</a>
 <p>
-<a href='recipes'>recipes</a>
-
+<a href='recipes'>Recipes</a>
 <p>
+<a href='inventory'>Inventory</a>
+<p>
+<a href='liquorTypes'>Liquor Types</a>
 """
         start_response('200 OK', list(html_headers))
         return [data]
 
-#=======================================================
+#======================================================= RECIPES
     def recipes(self, environ, start_response):
 
         data = "<b>Recipes</b><p>Recipe, Do We Have All the Ingredients?</p><ul>"
@@ -65,21 +99,66 @@ class SimpleApp(object):
                 data += """<p></p><li> %s, %s, %s, <b> %s</b><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_-xqzPnoj6Fv6aT7JeoZl7B_QsnwcfrdhuhyeZIS5SW0RutbRAg" alt="sad" width="50" height="50">""" % (key, a, b, answer)
             else:
                 answer = "Yes"
-                data += """<p></p><li> %s, %s, %s, <b> %s</b><img src="happyforeveralone.jpeg" alt="happy" width="50" height="50">""" % (key, a, b, answer)
+                data += """<p></p><li> %s, %s, %s, <b> %s</b><img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcROxLShuNusDhjtK3yGGl0wT5MFKK521IWA34D8JCnTDw5Bb0fBsg" alt="happy" width="50" height="50">""" % (key, a, b, answer)
 
         data += "</ul>"
 
         data += """
-<p><a href='index.html'>Back to Index</a>
+<p><a href='/'>Home</a>
 </p>
-<p><a href='recipes.html'>Recipes</a>
+<p><a href='inventory'>Inventory</a>
 </p>
-<p><a href='liquor_types.html'>Liquor Types</a>
+<p><a href='liquorTypes'>Liquor Types</a>
 </p>
 """
 
         start_response('200 OK', list(html_headers))
         return [data]
+#************************************************************* INVENTORY
+    def inventory(self, environ, start_response):
+
+        data = "<b>Inventory</b><p>Manufacturer, Liquor Type, Amount (ml)</p><ul>"
+
+        for mfg, liquor in db.get_liquor_inventory():
+            data += "<p> </p>"
+            data += "<li> %s,  %s, %s" % (mfg, liquor, db.get_liquor_amount(mfg,liquor))
+
+        data += "</ul>"
+
+        data += """
+<p><a href='/'>Home</a>
+</p>
+<p><a href='recipes'>Recipes</a>
+</p>
+<p><a href='liquorTypes'>Liquor Types</a>
+</p>
+"""
+        start_response('200 OK', list(html_headers))
+        return [data]
+
+#************************************************************ LIQUOR TYPES
+
+    def liquorTypes(self, environ, start_response):
+
+        data = "<b>Liquor Types</b><p>Manufacturer, Liquor Type</p><ul>"
+
+        for mfg, liquor in db.get_liquor_inventory():
+            data += "<p> </p>"
+            data += '<li> %s, %s' % (mfg, liquor)
+
+        data += "</ul>"
+
+        data += """
+<p><a href='/'>Home</a>
+</p>
+<p><a href='recipes'>Recipes</a>
+</p>
+<p><a href='inventory'>Inventory</a>
+</p>
+"""
+        start_response('200 OK', list(html_headers))
+        return [data]
+
 #=======================================================
         
     def somefile(self, environ, start_response):
@@ -114,11 +193,12 @@ class SimpleApp(object):
         formdata = environ['QUERY_STRING']
         results = urlparse.parse_qs(formdata)
 
-        firstname = results['firstname'][0]
-        lastname = results['lastname'][0]
+        amount = results['amount'][0]
+
+        amount_ml = convert.convert_ml(amount)
 
         content_type = 'text/html'
-        data = "First name: %s; last name: %s.  <a href='./'>return to index</a>" % (firstname, lastname)
+        data = "Amount in ml: %d <a href='/'>return to index</a>" % (amount_ml)
 
         start_response('200 OK', list(html_headers))
         return [data]
@@ -172,8 +252,7 @@ class SimpleApp(object):
 def form():
     return """
 <form action='recv'>
-Your first name? <input type='text' name='firstname' size'20'>
-Your last name? <input type='text' name='lastname' size='20'>
+Amount(Please include units)<p></p> <input type='text' name='amount' size'20'>
 <input type='submit'>
 </form>
 """
