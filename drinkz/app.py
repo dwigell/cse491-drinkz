@@ -30,9 +30,9 @@ import db, recipes, convert
 
 #==================================
 
+#filename = "bin/test_database"
 
-
-
+#db.load_db(filename)
 
 
 dispatch = {
@@ -69,19 +69,37 @@ class SimpleApp(object):
         return fn(environ, start_response)
             
     def index(self, environ, start_response):
-        data = """\
-<b>Home</b><p>
-<a href='content'>a file</a>,
-<a href='error'>an error</a>,
-<a href='helmet'>an image</a>,
-<a href='somethingelse'>something else</a>, or
-<a href='form'>a form...</a>
+        data = """
+<html>
+<head>
+<title>CSE491</title>
+<style type='text/css'>
+h1 {color:red;}
+body {font-size: 18px;}
+</style>
+<script>
+function alertBox()
+{
+alert("This is an alert box");
+}
+</script>
+</head>
+<body>
+
+<b><h1>Home</h1></b><p>
+
+<a href='form'>Covert to ml</a>
 <p>
 <a href='recipes'>Recipes</a>
 <p>
 <a href='inventory'>Inventory</a>
 <p>
 <a href='liquorTypes'>Liquor Types</a>
+<p>
+<input type="button" onclick="alertBox()" value="Show alert box" />
+
+</body>
+</html>
 """
         start_response('200 OK', list(html_headers))
         return [data]
@@ -89,7 +107,18 @@ class SimpleApp(object):
 #======================================================= RECIPES
     def recipes(self, environ, start_response):
 
-        data = "<b>Recipes</b><p>Recipe, Do We Have All the Ingredients?</p><ul>"
+        data = """
+<html>
+<head>
+<title>CSE491-Recipes</title>
+<style type = 'text/css'>
+h1 {color:green;}
+body {font-size: 18px;}
+</style>
+</head>
+<body>
+"""
+        data += "<b><h1>Recipes</h1></b><p>Recipe, Do We Have All the Ingredients?</p><ul>"
 
         for key in db._recipe_db:
             a = db._recipe_db[key].ingredients[0][0]
@@ -110,6 +139,8 @@ class SimpleApp(object):
 </p>
 <p><a href='liquorTypes'>Liquor Types</a>
 </p>
+</body>
+</html>
 """
 
         start_response('200 OK', list(html_headers))
@@ -117,7 +148,19 @@ class SimpleApp(object):
 #************************************************************* INVENTORY
     def inventory(self, environ, start_response):
 
-        data = "<b>Inventory</b><p>Manufacturer, Liquor Type, Amount (ml)</p><ul>"
+        data = """
+<html>
+<head>
+<title>CSE491-Inventory</title>
+<style type = 'text/css'>
+h1 {color:green;}
+body {font-size: 18px;}
+</style>
+</head>
+<body>
+"""
+        
+        data += "<b><h1>Inventory</h1></b><p>Manufacturer, Liquor Type, Amount (ml)</p><ul>"
 
         for mfg, liquor in db.get_liquor_inventory():
             data += "<p> </p>"
@@ -132,6 +175,8 @@ class SimpleApp(object):
 </p>
 <p><a href='liquorTypes'>Liquor Types</a>
 </p>
+</body>
+</html>
 """
         start_response('200 OK', list(html_headers))
         return [data]
@@ -140,7 +185,19 @@ class SimpleApp(object):
 
     def liquorTypes(self, environ, start_response):
 
-        data = "<b>Liquor Types</b><p>Manufacturer, Liquor Type</p><ul>"
+        data = """
+<html>
+<head>
+<title>CSE491-Liquor-Types</title>
+<style type = 'text/css'>
+h1 {color:green;}
+body {font-size: 18px;}
+</style>
+</head>
+<body>
+"""
+        
+        data += "<b><h1>Liquor Types</h1></b><p>Manufacturer, Liquor Type</p><ul>"
 
         for mfg, liquor in db.get_liquor_inventory():
             data += "<p> </p>"
@@ -155,6 +212,8 @@ class SimpleApp(object):
 </p>
 <p><a href='inventory'>Inventory</a>
 </p>
+</body>
+</html>
 """
         start_response('200 OK', list(html_headers))
         return [data]
@@ -248,6 +307,20 @@ class SimpleApp(object):
 
     def rpc_add(self, a, b):
         return int(a) + int(b)
+
+#==========================================
+    def rpc_convert_units_to_ml(self, amount):
+        amt = convert.convert_ml(amount)
+        return amt
+
+    def rpc_get_recipe_names(self):
+        names = db.get_all_recipe_names()
+        return names
+
+    def rpc_get_liquor_inventory(self):
+        inventory = db.get_liquor_inventory()
+        return inventory
+#===========================================
     
 def form():
     return """

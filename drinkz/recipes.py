@@ -1,4 +1,4 @@
-import db
+import db, convert
 #class for recipes
 
 class Recipe(object):
@@ -50,7 +50,7 @@ class Recipe(object):
                 if i[0]==item[1]:
                     if amount < float(item[2]): 
                         amount = float(item[2])
-            ing_amount = db.convert_ml(i[1])#convert the ingredient to ml
+            ing_amount = convert.convert_ml(i[1])#convert the ingredient to ml
             
             if float(amount) < float(ing_amount):#compare the amount with ing
                 needed = float(ing_amount)-float(amount)

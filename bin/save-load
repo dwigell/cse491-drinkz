@@ -5,8 +5,9 @@ import _mypath
 from drinkz.db import save_db, load_db
 
 def main(args):
+   print args
    filename = args[1]
-    
+   
    save_db(filename)
    load_db(filename)
 
