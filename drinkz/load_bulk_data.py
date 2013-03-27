@@ -81,10 +81,14 @@ def data_reader(fp):
 		continue
 	    if not line[0].strip():
 		continue
-	    (mfg, name, value) = line
-	    yield mfg, name, value
+	   # (mfg, name, value) = line
+	   # yield mfg, name, value
 	except IndexError:
             pass
-		
+	try:
+            (mfg,name,value) = line
+        except ValueError:
+            continue
+        yield mfg, name, value
 		
 			

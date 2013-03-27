@@ -318,8 +318,13 @@ body {font-size: 18px;}
         return names
 
     def rpc_get_liquor_inventory(self):
-        inventory = db.get_liquor_inventory()
-        return inventory
+        liquor_in = []
+        tup = ()
+        for mfg, liquor in db.get_liquor_inventory():
+            tup = (mfg, liquor)
+            liquor_in.append(tup)
+        print type(liquor_in[0])
+        return liquor_in
 #===========================================
     
 def form():

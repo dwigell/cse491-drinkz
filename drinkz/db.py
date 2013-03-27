@@ -70,7 +70,7 @@ def add_to_inventory(mfg, liquor, amount):
         new_amount = convert.convert_ml(amount)#FLOAT AMOUNT
         old_amount = get_liquor_amount(mfg, liquor)
         new_total = float(old_amount) + float(new_amount)
-        _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
+        _inventory_db[(mfg, liquor)] = str(new_total)+' ml'
 
 #	if item[1]=="ml":
 #	    new_amount = item[0]
