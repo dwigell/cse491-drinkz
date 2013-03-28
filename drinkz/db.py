@@ -72,23 +72,7 @@ def add_to_inventory(mfg, liquor, amount):
         new_total = float(old_amount) + float(new_amount)
         _inventory_db[(mfg, liquor)] = str(new_total)+' ml'
 
-#	if item[1]=="ml":
-#	    new_amount = item[0]
-#	    old_amount = get_liquor_amount(mfg, liquor)
-#	    new_total = float(old_amount) + float(new_amount)
-#	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
 
-#	if item[1]=="gallon" or item[1]=="gallons":
-#	    new_amount = convert_ml(amount)
-#	    old_amount = get_liquor_amount(mfg, liquor)
-#	    new_total = float(old_amount) + float(new_amount)
-#	    _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
-
-#       if item[1]=="liter" or item[1]=="liters":
-#          new_amount = convert_ml(amount)
-#          old_amount = get_liquor_amount(mfg, liquor)
-#          new_total = float(old_amount) + float(new_amount)
-#          _inventory_db[(mfg, liquor)] = repr(new_total)+' ml'
     else:    
     # ADD/UPDATE INVENTORY ITEM
         _inventory_db[(mfg, liquor)] =  amount
@@ -110,18 +94,7 @@ def get_liquor_amount(mfg, liquor):
     total_ml = 0.0
 
     for i in amounts:
-        total_ml += float(convert.convert_ml(i))
-    
-#    for item in amounts:
-#        item_amount = item.split()
-#        if item_amount[1]=="oz":
-#            total_ml += float(item_amount[0]) * 29.5735
-#	elif item_amount[1]=="gallon" or item_amount[1]=="gallons":
-#	    total_ml += float(item_amount[0]) * 3785.41
-#        elif item_amount[1]=="liter" or item_amount[1]=="liters":
-#            total_ml += float(item_amount[0]) * 1000
-#        else:
-#            total_ml += float(item_amount[0])    
+        total_ml += float(convert.convert_ml(i))    
 
     return total_ml 
 
@@ -130,17 +103,6 @@ def get_liquor_inventory():
     for key in _inventory_db:
         yield key[0], key[1]
 
-def convert_ml(amount):
-    total = 0.0
-
-    item = amount.split()
-    if item[1]=="oz":
-	total += float(item[0]) * 29.5735
-    if item[1]=="gallon" or item[1]=="gallons":
-        total += float(item[0]) * 3785.41
-    if item[1]=="liter" or item[1]=="liters":
-        total += float(item[0]) * 1000
-    return total
 
 def add_recipe(r):
     
