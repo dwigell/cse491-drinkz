@@ -12,6 +12,39 @@ import csv                              # Python csv package
 
 from . import db                        # import from local package
 
+from . import recipes
+
+
+def load_recipes(fp):
+
+    new_reader = recipe_reader(fp)
+    
+    n = 0
+
+    while(1):
+        try:
+            for(recipe) in new_reader: #each line represents a recipe
+                name = recipe[0] 
+                
+                i = 1
+                ingredients = []
+                while(i<len(recipe)): # iterate the ingredients
+                    ingName = recipe[i]
+                    ingAmt = recipe[i+1]
+                    tempTup = (ingName, ingAmt)# put name and amt in tup
+                    ingredients.append(tempTup)# then put into list of ingredients
+                    i+=2
+                r = recipes.Recipe(name, ingredients)# add recipe to db
+                db.add_recipe(r)
+                n += 1
+                
+            new_reader.next()
+        except StopIteration:
+            break
+    #print db.get_all_recipe_names()
+    return n
+
+
 def load_bottle_types(fp):
     """
     Loads in data of the form manufacturer/liquor name/type from a CSV file.
@@ -92,3 +125,21 @@ def data_reader(fp):
         yield mfg, name, value
 		
 			
+def recipe_reader(fp):
+
+    reader = csv.reader(fp)
+    for line in reader:
+	try:
+            if line[0].startswith('#'):
+		continue
+	    if not line[0].strip():
+		continue
+	   # (mfg, name, value) = line
+	   # yield mfg, name, value
+	except IndexError:
+            pass
+        try:
+            (recipe) = line
+        except ValueError:
+            continue
+        yield recipe 

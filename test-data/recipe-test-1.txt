@@ -1,0 +1,3 @@
+# test to see if load-liquor-recipes works
+thisIsARecipe, bacardi, 4 oz, jack whiskey, 5 oz
+AnotherRecipe,blue swan vodka,10 liters,bacardi limon,12 gallons,jim beam,2 oz

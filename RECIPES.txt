@@ -1,0 +1,18 @@
+I created a function in drinkz.load_bulk_data.py called
+load_recipes which works in a similar way to load_bottle_types
+and load_inventory. Each line in the file is read as a recipe where
+the name of the recipe is the first value of the line. All values
+after the first correspond to the liquor ingredients and their
+amounts respectively.
+I then wrote a script in the bin directory called load-liquor-recipes
+which utilizes the function load_recipes.
+
+To load bulk recipes:
+   python load-liquor-recipes filename
+
+In your file that you decide to load, make sure that you separate the
+name, ingredient names, and ingredient amounts with commas
+
+EXAMPLE:
+
+	recipe name, ingredient 1, amount 1, ingredient 2, amount 2
