@@ -99,7 +99,35 @@ def test_json_liquor_inventory():
     assert ['Gray Goose', 'vodka'] in result
 
     
+def test_json_add_liquor_type():
+    db._reset_db()
+    
+    call_remote(method='add_liquor_type', params = ['Johnnie Walker', 'black label', 'blended scotch'], id='1')
 
+    assert db._check_bottle_type_exists('Johnnie Walker', 'black label')==True
     
                 
                       
+def test_json_add_to_inventory():
+
+    db._reset_db()
+    db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
+
+    call_remote(method='add_to_inventory', params = ['Johnnie Walker', 'black label', '10 ml'], id='1')
+    
+    assert db.check_inventory('Johnnie Walker', 'black label')==True
+    assert db.get_liquor_amount('Johnnie Walker', 'black label')==10
+
+def test_json_add_recipe():
+
+    db._reset_db()
+
+    name = 'scotch on the rocks'
+    ing = [('blended scotch', '4 oz')]
+
+    call_remote(method='add_recipe', params = [name, ing], id='1')
+
+    print db.get_all_recipe_names()
+    
+    assert name in db.get_all_recipe_names()
+    

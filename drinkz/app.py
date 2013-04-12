@@ -412,6 +412,18 @@ body {font-size: 18px;}
             liquor_in.append(tup)
         print type(liquor_in[0])
         return liquor_in
+
+    def rpc_add_liquor_type(self, mfg, liquor, typ):
+        db.add_bottle_type(mfg, liquor, typ)
+
+    def rpc_add_to_inventory(self, mfg, liquor, amount):
+        db.add_to_inventory(mfg, liquor, amount)
+
+    def rpc_add_recipe(self, name, ingredients):
+
+        r = recipes.Recipe(name, ingredients)
+        
+        db.add_recipe(r)
 #===========================================
     
 def form():
