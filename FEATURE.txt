@@ -1,0 +1,33 @@
+Al Coholic wants to go to a party, but admission to the party requires
+him to bring a bottle of alcohol that isn't already going to be
+there. Luckily, Al can look up what people are bringing to the
+party.
+
+Scenario One:
+He finds the party on the 'parties' page of the
+website. Unfortunately, the average drink rating for the party is way
+above any of those in his drink cabinet and way above his price range.
+So Al appropriately decides not to go.
+
+Scenario Two:
+He finds the party on the 'parties' page of the
+website. Unfortunately, the average drink rating for the party is way
+above any of those in his drink cabinet and way above his price range.
+So, Al Coholic being Al Coholic, scours the party page for a more
+acceptable party to go to.
+
+Scenario Three:
+He finds the party on the 'parties' page of the website. The party's
+average drink rating is well within his capabilities, so Al decides to
+click on the party to see what drink he can bring. He sees that nobody
+is bringing Jack Daniel's whiskey. So, Al adds his name and his
+whiskey to the guest list.(Al should delete his whiskey from his
+cabinet in order to keep his records accurate)
+
+FEATURES:
+	- Party page displaying parties with time, location, and
+	rating(only parties displayed will be for the current date)
+	- Drinks have a rating based on price from 0-100
+	- Each individual party's page consists of a guestlist with
+	names for one column and drinks for the other. It will also
+	allow users to add themselves to the guestlist.
