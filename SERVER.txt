@@ -7,9 +7,9 @@ assigned to the server.
 I used grab-page as my primary test client.
 An example of what I did to test my server could be...
 
-python2.7 grab-page arctic.msu.edu 8089
-	  	       ^	   ^
-		       host	   port
+python2.7 grab-page arctic.cse.msu.edu 8089
+	  	       ^	        ^
+		       host	       port
 
 After running run-web for a while I noticed that the GET
 command consisted of "GET /somepath HTTP/1.1". So, in order
