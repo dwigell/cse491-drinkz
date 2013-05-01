@@ -6,10 +6,18 @@ from drinkz.app import SimpleApp
 from drinkz.load_bulk_data import load_inventory, load_bottle_types
 import drinkz.db, drinkz.recipes
 
+import urlparse
+import json as simplejson
+
+
 
 #run run-web from the cse491-drinkz directory NOT BIN
-filename = "bin/test_database"
+filename = "bin/test_database2"
+
+
 drinkz.db.load_db(filename)
+
+#print drinkz.db._bottle_types_db;
 
 if __name__ == '__main__':
     import random, socket

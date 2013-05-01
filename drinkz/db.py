@@ -4,6 +4,10 @@ Database functionality for drinkz information.
 
 import convert
 
+import sqlite3, os
+import os
+import sys
+import recipes
 
 from cPickle import dump, load
 
@@ -22,22 +26,126 @@ def _reset_db():
     _recipe_db = {}
 
 def save_db(filename):
-    fp = open(filename, 'wb')
 
-    tosave = (_bottle_types_db, _inventory_db, _recipe_db)
-    dump(tosave, fp)
+    try:
+        os.unlink(filename)
+    except OSError:
+        pass
 
-    fp.close()
+    db = sqlite3.connect(filename)
+
+    with db:
+        c = db.cursor()
+
+        c.execute("CREATE TABLE BottleTypes(mfg STRING, liquor STRING, typ STRING)")
+        c.execute("CREATE TABLE Inventory(mfg STRING, liquor STRING, amount STRING)")
+        c.execute("CREATE TABLE Recipes(name STRING, ingredients BUFFER)")
+
+
+        for (m, l, typ) in _bottle_types_db:
+            c.execute("insert into BottleTypes values (?, ?, ?)", (m, l, typ))
+        for (m, l) in _inventory_db:
+            mfg = m
+            liquor = l
+            amount = _inventory_db[(mfg, liquor)]
+            c.execute("insert into Inventory values (?, ?, ?)", (mfg, liquor, amount))
+
+        for key in _recipe_db:
+            templist = _recipe_db[key].ingredients # ingredients list
+            buflist = buffer(convert_list_to_str(templist)) # convert ingredients to string
+            c.execute("insert into Recipes values (?, ?)", (key, buflist)) # insert into db
+
+        db.commit()
+        c.close()
+
+
+#==========================================================
+#    fp = open(filename, 'wb')
+#
+#    tosave = (_bottle_types_db, _inventory_db, _recipe_db)
+#    dump(tosave, fp)
+#
+#    fp.close()
+#==========================================================
+
+
+
+
+
+
 
 def load_db(filename):
-    global _bottle_types_db, _inventory_db, _recipe_db
-    fp = open(filename, 'rb')
 
-    loaded = load(fp)
-    (_bottle_types_db, _inventory_db, _recipe_db) = loaded
+    db = sqlite3.connect(filename)
+    db.text_factory = str
 
-    fp.close()
+    with db:
 
+        c = db.cursor()
+
+        c.execute("SELECT * FROM BottleTypes") # put all bottletypes into db
+        rows = c.fetchall()
+        for row in rows:
+            mfg,liquor,typ = row
+            
+            _bottle_types_db.add((mfg,liquor,typ))
+
+        c.execute("SELECT * FROM Inventory") # put all inventory items into db
+        rows = c.fetchall()
+        for row in rows:
+            mfg,liquor,amt = row
+            _inventory_db[(mfg, liquor)]=amt
+
+        c.execute("SELECT * FROM Recipes") # put all recipes into db
+        rows = c.fetchall()
+        for row in rows:
+            name,ingredients = row
+
+            ing_list = convert_str_to_list(str(ingredients))# convert ingredients back to list of tuples
+            
+            r = recipes.Recipe(name,ing_list) #create recipe object
+            add_recipe(r) #add to database
+
+        db.commit()
+        c.close()
+
+        
+        
+
+#===================================================================
+#    global _bottle_types_db, _inventory_db, _recipe_db
+#    fp = open(filename, 'rb')
+#
+#    loaded = load(fp)
+#    (_bottle_types_db, _inventory_db, _recipe_db) = loaded
+#
+#    fp.close()
+#
+#===================================================================
+
+
+
+# convert a list to a string(ingredients list to string)
+def convert_list_to_str(l):
+    slist = ""
+
+    for item in l:
+        #items in l are tuples of two: (liquor, amt)
+        liquor, amt = item
+
+        slist += "{}:{};".format(liquor, amt)
+    return slist[:-1]
+
+#convert the string back to list
+def convert_str_to_list(s):
+    regular_list = []
+
+    for t in s.split(';'): #use the ; symbol to separate the tuples
+        liq, amt = t.split(':') # split the tup into its proper values
+        regular_list.append((liq, amt)) # append the tup to the list
+
+    return regular_list
+    
 # exceptions in Python inherit from Exception and generally don't need to
 # override any methods.
 class LiquorMissing(Exception):
