@@ -1,9 +1,11 @@
 import socket, sys
+import drinkz.test_jsonrpc
 
 def main(args):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((args[1],int(args[2])))
-    s.send("GET / HTTP/1.1\r\n\r\n")
+
+    s.send("""POST convert_units_to_ml HTTP/1.1\r\n\r\namount=2 liters""")
 
     while 1:
         buf = s.recv(1000)

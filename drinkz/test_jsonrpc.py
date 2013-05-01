@@ -16,6 +16,8 @@ def call_remote(method, params, id):
     length = len(encoded)
 
 
+    # print 'OUTPUT+++++=====***** ' , encoded
+
     environ = {}
     environ['PATH_INFO'] = '/rpc'
     environ['REQUEST_METHOD'] = 'POST'
@@ -46,7 +48,7 @@ def test_json_conversion():
 
     result = rpc_request['result']
 
-    print result
+    #print result
 
     assert result == 2000
 
@@ -130,4 +132,7 @@ def test_json_add_recipe():
     print db.get_all_recipe_names()
     
     assert name in db.get_all_recipe_names()
+    
+
+
     
