@@ -182,8 +182,8 @@ Your username is """
 <html>
 <body>
 
-You're not Logged in.....
-
+You're not Logged in.....<p>
+<a href='/'>Home</a>
 </body>
 </html>
 """
