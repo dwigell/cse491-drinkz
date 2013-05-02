@@ -5,7 +5,8 @@ import simplejson
 
 import db, recipes, convert
 
-        
+import os, sys
+import _mypath 
 
 dispatch = {
     '/' : 'index',
@@ -235,7 +236,12 @@ body {font-size: 18px;}
         return [data]
 
     def form(self, environ, start_response):
-        data = form()
+        
+        content_type = 'text/html'
+        
+        data = open('html/convert.html',).read()
+        
+        #data = form()
 
         start_response('200 OK', list(html_headers))
         return [data]

@@ -1,0 +1,47 @@
+<html>
+
+<!-- Show off some jQuery functionality --> 
+
+<head>
+<script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+
+<p>
+
+Retrieve from server: Convert(amount units) <input type='text' class='a' value='' size='10' />:
+
+<p class='toupdate' />
+
+<script type="text/javascript">
+
+function update_result(a,c) {
+   text = '<font color="red"><b>' + a  +  '=' + c + ' ml' + '</font></b>';
+   text += '<p><a href="/">return to index</a>'
+
+   $('p.toupdate').html(text);
+}
+
+function do_convert() {
+ a = $('input.a').val();
+
+ $.ajax({
+     url: '/rpc', 
+     data: JSON.stringify ({method:'convert_units_to_ml', params:[a], id:"0"} ),
+     type: "POST",
+     dataType: "json",
+     success: function (data) { update_result(a, data.result) },
+     error: function (err)  { alert ("Error");}
+  });
+}
+
+$('input.a').change(do_convert);
+</script>
+
+<br>
+
+<a href="/">return to index</a>
+
+
+</body>
+</html>
