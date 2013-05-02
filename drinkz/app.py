@@ -6,7 +6,13 @@ import simplejson
 import db, recipes, convert
 
 import os, sys
-import _mypath 
+import _mypath
+
+from Cookie import SimpleCookie
+import uuid
+
+
+usernames = {}
 
 dispatch = {
     '/' : 'index',
@@ -25,7 +31,12 @@ dispatch = {
     '/addToInventory' : 'addToInventory',
     '/recvInventory' : 'recvInventory',
     '/addRecipe' : 'addRecipe',
-    '/recvRecipe' : 'recvRecipe'
+    '/recvRecipe' : 'recvRecipe',
+
+    '/login_1' : 'login_1',
+    '/login1_process' : 'login1_process',
+    '/logout' : 'logout',
+    '/status' : 'status'
 }
 
 html_headers = [('Content-type', 'text/html')]
@@ -81,6 +92,12 @@ alert("This is an alert box");
 <p>
 <a href='addRecipe'>Add Recipe</a>
 <p>
+<a href='login_1'>Login</a>
+<p>
+<a href='logout'>Logout</a>
+<p>
+<a href='status'>Status</a>
+<p>
 <input type="button" onclick="alertBox()" value="Show alert box" />
 
 </body>
@@ -88,6 +105,93 @@ alert("This is an alert box");
 """
         start_response('200 OK', list(html_headers))
         return [data]
+
+
+#******************************************************* LOGIN STUFF
+    def login_1(self, environ, start_response):
+        data = login_form()
+
+        start_response('200 OK', list(html_headers))
+
+        return [data]
+
+    def login1_process(self, environ, start_response):
+        formdata = environ['QUERY_STRING']
+        results = urlparse.parse_qs(formdata)
+
+        name = results['name'][0]
+        content_type = 'text/html'
+
+        # authentication would go here -- is this a valid username/password,
+        # for example?
+
+        if name in usernames:
+            print "Username already exists"
+
+        k = str(uuid.uuid4())
+        usernames[k] = name
+
+        headers = list(html_headers)
+        headers.append(('Location', '/'))
+        headers.append(('Set-Cookie', 'name1=%s' % k))
+
+        start_response('302 Found', headers)
+        return ["Redirect to /..."]
+
+    def logout(self, environ, start_response):
+        if 'HTTP_COOKIE' in environ:
+            c = SimpleCookie(environ.get('HTTP_COOKIE', ''))
+            if 'name1' in c:
+                key = c.get('name1').value
+                name1_key = key
+
+                if key in usernames:
+                    del usernames[key]
+                    print 'DELETING'
+
+        pair = ('Set-Cookie',
+                'name1=deleted; Expires=Thu, 01-Jan-1970 00:00:01 GMT;')
+        headers = list(html_headers)
+        headers.append(('Location', '/'))
+        headers.append(pair)
+
+        start_response('302 Found', headers)
+        return ["Redirect to /..."]
+
+    def status(self, environ, start_response):
+
+        name1 = ''
+        name1_key = '*empty*'
+        if 'HTTP_COOKIE' in environ:
+            c = SimpleCookie(environ.get('HTTP_COOKIE', ''))
+            if 'name1' in c:
+                key = c.get('name1').value
+                name1 = usernames.get(key, '')
+                name1_key = key
+                data = """
+<html>
+<body>
+
+Your username is """
+                data += name1
+                data += " and your key is "
+                data += name1_key
+                data += "<p><a href='/'>Home</a></body></html>"
+            else:
+                data = """
+<html>
+<body>
+
+You're not Logged in.....
+
+</body>
+</html>
+"""
+
+        start_response('200 OK', list(html_headers))
+        
+        return [data]
+    
 
 #======================================================= RECIPES
     def recipes(self, environ, start_response):
@@ -353,6 +457,11 @@ body {font-size: 18px;}
 
         start_response('200 OK', list(html_headers))
         return [data]
+
+
+    #**************************************************************** HW 6 LOGIN
+
+    
         
     #================================================================== HW 5 FORMS
     def dispatch_rpc(self, environ, start_response):
@@ -468,6 +577,18 @@ Ingredients(please separate with commas): ing1, amt1, ing2, amt2, ... etc)<input
 <input type='submit'>
 </form>
 """
+
+#******************************************* HW 6 LOGIN
+
+def login_form():
+    return """
+<form action='login1_process'>
+Name<input type='text' name='name' size'20'>
+<input type='submit'>
+</form>
+"""
+
+
 
 if __name__ == '__main__':
     import random, socket
